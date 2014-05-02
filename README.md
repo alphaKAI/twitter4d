@@ -34,6 +34,12 @@ Retrun value : plain json String
 '(Instance of Twitter4D).request("GET", "endPoint", ["additional": "parameters"]);'  
 Return value : plain json String  
   
+<<<<<<< HEAD
+=======
+##How to compile with Twitter4D
+`$ dmd FileName.d twitter4d.d -L-lcurl`  
+  
+>>>>>>> f746828... fix : README.md
   
 ##LICENSE
 The MIT LICENSE  
