@@ -87,16 +87,9 @@ class Twitter4D{
     auto http = HTTP();
     http.addRequestHeader("Authorization", authorize);
     http.method = HTTP.Method.get;
-    auto st = byLineAsync(url ~ "?" ~ path);
-    foreach(line; st){
-      if(match(line.to!string, regex(r"\{.*\}"))){
-        auto parsed = parseJSON(line.to!string);
-        if("text" in parsed.object)//tweet
-          writefln("\r[%s]:%s - [%s]", parsed.object["user"].object["name"],
-              parsed["created_at"],
-              parsed.object["text"]);
-      }
-    }
+    auto streamSocket = byLineAsync(url ~ "?" ~ path);
+
+    return streamSocket;
   }
 
   private{

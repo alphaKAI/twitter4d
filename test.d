@@ -1,17 +1,26 @@
-//test.d
 import twitter4d;
-// Not Requirements
 import std.stdio,
-       std.json;
-
+       std.json,
+       std.conv,
+       std.regex;
 void main(){
   Twitter4D t4d = new Twitter4D([
       "consumerKey"       : "Your Consumer Key",
       "consumerSecret"    : "Your Consumer Secret",
-      "accessToken"       : "Your Access Token",
+      "accessToken"       : "Your Access Token" ,
       "accessTokenSecret" : "Your Access Token Secret"]);
 
-  t4d.request("POST", "statuses/update.json", ["status" : "test"]);
+  writeln(t4d.request("POST", "statuses/update.json", ["status" : "test"]));
   writeln(parseJSON(t4d.request("GET", "account/verify_credentials.json", ["":""])));
-}
+  
+  foreach(line; t4d.stream()){
+    if(match(line.to!string, regex(r"\{.*\}"))){
+      auto parsed = parseJSON(line.to!string);
+      if("text" in parsed.object)//tweet
+        writefln("\r[%s]:%s - [%s]", parsed.object["user"].object["name"],
+            parsed["created_at"],
+            parsed.object["text"]);
+      }
+    }
 
+}
