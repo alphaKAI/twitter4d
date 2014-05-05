@@ -6,6 +6,8 @@ The Simple Twitter API Wrapper Library For D Programming Language.
   
 ##Sample
 You can access twitter api with simple way.  
+  
+  
 ###This Sample Requirements
 ```d
 import std.stdio,
@@ -28,13 +30,12 @@ Twitter4D t4d = new Twitter4D([
 ###STREAMING API SAMPLE : UserStream
 ```d
 foreach(line; t4d.stream()){
-    if(match(line.to!string, regex(r"\{.*\}"))){
-      auto parsed = parseJSON(line.to!string);
-      if("text" in parsed.object)//tweet
-        writefln("\r[%s]:%s - [%s]", parsed.object["user"].object["name"],
-            parsed["created_at"],
-            parsed.object["text"]);
-    }
+  if(match(line.to!string, regex(r"\{.*\}"))){
+    auto parsed = parseJSON(line.to!string);
+    if("text" in parsed.object)//tweet
+      writefln("\r[%s]:%s - [%s]", parsed.object["user"].object["name"],
+          parsed["created_at"],
+          parsed.object["text"]);
   }
 }
 ``` 
