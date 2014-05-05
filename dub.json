@@ -1,0 +1,8 @@
+{
+    "name": "twitter4d",
+    "description": "The Simple Twitter API Wrapper Library For D Programming Language.",
+    "homepage": "http://alpha-kai-net.info/",
+    "authors": ["alphaKAI"],
+    "copyright": "Copyright (C) 2014 alphaKAI",
+    "license": "MIT"
+}
