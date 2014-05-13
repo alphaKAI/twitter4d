@@ -26,14 +26,11 @@ class Twitter4D{
     string baseUrl = "https://api.twitter.com/1.1/";
   }
 
-  this(string[string] oauthHash){
-    if(oauthHash.length < 4)
-      throw new Error("Error: When Initialize this class, requirements 4 element");
-
-    consumerKey       = oauthHash["consumerKey"];
-    consumerSecret    = oauthHash["consumerSecret"];
-    accessToken       = oauthHash["accessToken"];
-    accessTokenSecret = oauthHash["accessTokenSecret"];
+  this(string consumerKey, string consumerSecret, string accessToken, string accessTokenSecret){
+    this.consumerKey       = consumerKey;
+    this.consumerSecret    = consumerSecret;
+    this.accessToken       = accessToken;
+    this.accessTokenSecret = accessTokenSecret;
   }
 
 
