@@ -4,11 +4,11 @@ import std.stdio,
        std.conv,
        std.regex;
 void main(){
-  Twitter4D t4d = new Twitter4D([
-      "consumerKey"       : "Your Consumer Key",
-      "consumerSecret"    : "Your Consumer Secret",
-      "accessToken"       : "Your Access Token" ,
-      "accessTokenSecret" : "Your Access Token Secret"]);
+  Twitter4D t4d = new Twitter4D(
+    "Your Consumer Key",
+    "Your Consumer Secret",
+    "Your Access Token" ,
+    "Your Access Token Secret");
 
   writeln(t4d.request("POST", "statuses/update.json", ["status" : "test"]));
   writeln(parseJSON(t4d.request("GET", "account/verify_credentials.json", ["":""])));
