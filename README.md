@@ -20,8 +20,16 @@ import std.stdio,
 Twitter4D t4d = new Twitter4D([
     "consumerKey"       : "Your Consumer Key",
     "consumerSecret"    : "Your Consumer Secret",
-    "accessToken"       : "Your Access Token" ,
+    "accessToken"       : "Your Access Token",
     "accessTokenSecret" : "Your Access Token Secret"]);
+```
+or  
+```d
+Twitter4D t4d = new Twitter4D(
+    "Your Consumer Key",
+    "Your Consumer Secret",
+    "Your Access Token",
+    "Your Access Token Secret"]); 
 ```
 ###POST API SAMPLE : statuses/update.json 
 `t4d.request("POST", "statuses/update.json", ["status" : "test"]));`
