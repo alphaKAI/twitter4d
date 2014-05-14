@@ -26,22 +26,31 @@ class Twitter4D{
     string baseUrl = "https://api.twitter.com/1.1/";
   }
 
-  this(string[string] oauthHash){
-    if(oauthHash.length < 4)
+  this (string[string] oauthHash){
+    if(oauthHash.length == 2)
+      getAccessToken(oauthHash["consumerKey"], oauthHash["consumerSecret"]);
+    else if(oauthHash.length < 4)
       throw new Error("Error: When Initialize this class, requirements 4 element");
-
-    consumerKey       = oauthHash["consumerKey"];
-    consumerSecret    = oauthHash["consumerSecret"];
-    accessToken       = oauthHash["accessToken"];
-    accessTokenSecret = oauthHash["accessTokenSecret"];
+    else if(oauthHash.length == 4){
+      consumerKey       = oauthHash["consumerKey"];
+      consumerSecret    = oauthHash["consumerSecret"];
+      accessToken       = oauthHash["accessToken"];
+      accessTokenSecret = oauthHash["accessTokenSecret"];
+    }
   }
 
-  this(string consumerKey, string consumerSecret,
+  //Another way
+  this (string consumerKey, string consumerSecret,
       string accessToken, string accessTokenSecret){
     this.consumerKey       = consumerKey;
     this.consumerSecret    = consumerSecret;
     this.accessToken       = accessToken;
     this.accessTokenSecret = accessTokenSecret;
+  }
+
+  //Get AccessToken
+  this (string consumerKey, string consumerSecret){
+    getAccessToken(consumerKey, consumerSecret);
   }
 
   // post/get request function
@@ -78,7 +87,6 @@ class Twitter4D{
     return null;
   }
 
-
   //Testing
   auto stream(string url = "https://userstream.twitter.com/1.1/user.json"){
     string[string] params = buildParams();
@@ -99,16 +107,19 @@ class Twitter4D{
     return streamSocket;
   }
 
+  string[] getAccessTokenValue(){
+    return [accessToken, accessTokenSecret];
+  }
   private{
     string[string] buildParams(string[string] additionalParam = ["":""]){
       string now = Clock.currTime.toUnixTime.to!string;
       string[string] params = [
-        "oauth_consumer_key" : consumerKey,
-        "oauth_nonce" : "4324yfe",
+        "oauth_consumer_key"     : consumerKey,
+        "oauth_nonce"            : "4324yfe",
         "oauth_signature_method" : "HMAC-SHA1",
-        "oauth_timestamp" : now,
-        "oauth_token" : accessToken,
-        "oauth_version" : "1.0"];
+        "oauth_timestamp"        : now,
+        "oauth_token"            : accessToken,
+        "oauth_version"          : "1.0"];
       
       if(additionalParam != ["":""])
         foreach(key, value; additionalParam)
@@ -137,6 +148,33 @@ class Twitter4D{
       string oauthSignature = encodeComponent(Base64.encode(hmac_sha1(key, base)));
 
       return oauthSignature;
+    }
+
+    // Unavailable
+    string[] getAccessToken(string consumerKey, string consumerSecret){
+      string oauthUrlBase = "https://api.twitter.com/oauth/";
+      string tmpBase      = this.baseUrl;
+      writeln(baseUrl);
+      this.baseUrl = oauthUrlBase;
+      writeln(baseUrl);
+
+      auto parsed = parseJSON(request("POST", "request_token", ["":""]));
+      writeln(parsed);
+      string oauthToken       = parsed.object["oauth_token"].to!string;
+      string oauthTokenSecret = parsed.object["oauth_token_secret"].to!string;
+
+      string pin = (){
+        writeln("please access to => https://api.twitter.com/oauth/authorize?oauth_token=" ~ oauthToken);
+        write("INTPUT PIN => ");
+        return readln();
+      }();
+
+      auto tokens = request("GET", "authorize", ["oauth_verifier" : pin]);
+
+      writeln(tokens);
+      this.baseUrl = tmpBase;
+
+      return [""];
     }
   }
 }
