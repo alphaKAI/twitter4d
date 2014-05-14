@@ -36,6 +36,13 @@ class Twitter4D{
     accessTokenSecret = oauthHash["accessTokenSecret"];
   }
 
+  this(string consumerKey, string consumerSecret,
+      string accessToken, string accessTokenSecret){
+    this.consumerKey       = consumerKey;
+    this.consumerSecret    = consumerSecret;
+    this.accessToken       = accessToken;
+    this.accessTokenSecret = accessTokenSecret;
+  }
 
   // post/get request function
   // Ex: request("POST", "statuses/update.json" ["status": "hoge"]);
