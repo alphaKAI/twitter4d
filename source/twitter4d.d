@@ -46,7 +46,7 @@ class Twitter4D{
 
   // post/get request function
   // Ex: request("POST", "statuses/update.json" ["status": "hoge"]);
-  auto request(string type, string endPoint, string[string] paramsArgument){
+  auto request(string type, string endPoint, string[string] paramsArgument = ["":""]){
     string method = (){
       if(type == "get" || type == "GET")
         return "GET";
