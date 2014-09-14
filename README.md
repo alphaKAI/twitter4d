@@ -32,7 +32,7 @@ Twitter4D t4d = new Twitter4D(
     "Your Access Token Secret"]); 
 ```
 ###POST API SAMPLE : statuses/update.json 
-`t4d.request("POST", "statuses/update.json", ["status" : "test"]));`
+`t4d.request("POST", "statuses/update.json", ["status" : "test"]);`
 ###GET API SAMPLE : account/verify_credentials.json
 `writeln(parseJSON(t4d.request("GET", "account/verify_credentials.json", ["":""])));`
 ###STREAMING API SAMPLE : UserStream
