@@ -20,8 +20,6 @@ mixin template TwitterAPI(){
       if((){
           if(status.length == 0)
             return true;
-          if(status.removechars(" ").length == 0)
-            return true;
           }())
         return "Error";
 
