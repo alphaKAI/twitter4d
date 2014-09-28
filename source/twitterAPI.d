@@ -17,11 +17,15 @@ mixin template TwitterAPI(){
         foreach(key, value; otherPrams)
           params[key] = value;
       
-      if((){
+/*      if((){
           if(status.length == 0)
             return true;
-          }())
-        return "Error";
+          }())*/
+      /*
+        Todo : change the return type
+       */
+      if(status.length == 0)
+        throw new Error("Error");
 
       params["status"] = status;
 
