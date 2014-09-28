@@ -16,7 +16,10 @@ import std.digest.sha,
        std.conv,
        std.uri;
 
+import twitterAPI;
+
 class Twitter4D{
+  mixin TwitterAPI;
   private{
     string consumerKey,
            consumerSecret,
@@ -26,6 +29,8 @@ class Twitter4D{
     string baseUrl = "https://api.twitter.com/1.1/";
   }
 
+  Statuses statuses;
+
   this(string[string] oauthHash){
     if(oauthHash.length < 4)
       throw new Error("Error: When Initialize this class, requirements 4 element");
@@ -34,6 +39,8 @@ class Twitter4D{
     consumerSecret    = oauthHash["consumerSecret"];
     accessToken       = oauthHash["accessToken"];
     accessTokenSecret = oauthHash["accessTokenSecret"];
+
+    statuses = new Statuses;
   }
 
   this(string consumerKey, string consumerSecret,
@@ -42,6 +49,8 @@ class Twitter4D{
     this.consumerSecret    = consumerSecret;
     this.accessToken       = accessToken;
     this.accessTokenSecret = accessTokenSecret;
+    
+    statuses = new Statuses;
   }
 
   // post/get request function
