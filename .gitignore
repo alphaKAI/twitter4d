@@ -1,2 +1,9 @@
 test2.d
 test2
+.*.swp
+*.o
+.dub
+.buildpath
+.project
+.settings
+dub.selections.json
