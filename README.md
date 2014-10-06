@@ -59,10 +59,14 @@ foreach(line; t4d.stream()){
   
 ##Documents - First way
 ###POST API
-`(Instance of Twitter4D).request("POST", "endPoint", ["additional" : "parameters"]);`  
+```d
+(Instance of Twitter4D).request("POST", "endPoint", ["additional" : "parameters"]);
+```  
 Retrun value : plain json String  
 ###GET API
-`(Instance of Twitter4D).request("GET", "endPoint", ["additional": "parameters"]);`  
+```d
+(Instance of Twitter4D).request("GET", "endPoint", ["additional": "parameters"]);
+```  
 Return value : plain json String  
 ###STREAMING API
 default streaming api is UserStream  
@@ -78,7 +82,7 @@ Return value : streaming api session
 ###POST API SAMPLE - Second way : statuses/update.json 
 `t4d.status.update("test");`
 ###GET API SAMPLE  - Second way : statuses/home_timeline
-```
+```d
 auto timelineResult = t4d.statuses.home_timeline(["count" : "30"]);
   foreach(statusJson; timelineResult.json.array)
     writeln(timelineResult.getJsonElemFromJsonValue(statusJson, "user/screen_name")
