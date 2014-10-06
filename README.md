@@ -2,10 +2,16 @@
 
 ##About this
 The Simple Twitter API Wrapper Library For D Programming Language.  
+(Sorry for my poor English)  
   
   
 ##Sample
 You can access twitter api with simple way.  
+This library provide 2 way to access TwitterAPI.
+First way is direct.  
+Second way is abstract.  
+  
+At first, write the first way.  
   
   
 ###This Sample Requirements
@@ -31,11 +37,13 @@ Twitter4D t4d = new Twitter4D(
     "Your Access Token",
     "Your Access Token Secret"]); 
 ```
-###POST API SAMPLE : statuses/update.json 
+
+##First way
+###POST API SAMPLE - First way : statuses/update.json 
 `t4d.request("POST", "statuses/update.json", ["status" : "test"]);`
-###GET API SAMPLE : account/verify_credentials.json
+###GET API SAMPLE  - First way : account/verify_credentials.json
 `writeln(parseJSON(t4d.request("GET", "account/verify_credentials.json", ["":""])));`
-###STREAMING API SAMPLE : UserStream
+###STREAMING API SAMPLE - First way : UserStream
 ```d
 foreach(line; t4d.stream()){
   if(match(line.to!string, regex(r"\{.*\}"))){
@@ -49,7 +57,7 @@ foreach(line; t4d.stream()){
 ``` 
   
   
-##Documents
+##Documents - First way
 ###POST API
 `(Instance of Twitter4D).request("POST", "endPoint", ["additional" : "parameters"]);`  
 Retrun value : plain json String  
@@ -62,8 +70,39 @@ default streaming api is UserStream
 Return value : streaming api session  
   
   
-##How to compile with Twitter4D
+##How to compile with Twitter4D - First way
 `$ dmd FileName.d twitter4d.d -L-lcurl`  
+  
+  
+##Second way
+###POST API SAMPLE - Second way : statuses/update.json 
+`t4d.status.update("test");`
+###GET API SAMPLE  - Second way : statuses/home_timeline
+```
+auto timelineResult = t4d.statuses.home_timeline(["count" : "30"]);
+  foreach(statusJson; timelineResult.json.array)
+    writeln(timelineResult.getJsonElemFromJsonValue(statusJson, "user/screen_name")
+        ~ " : " ~ timelineResult.getJsonElemFromJsonValue(statusJson, "text"));
+```
+  
+  
+##Documents - Second way
+###Call API
+t4d.(Resource family).(End Point)(some arguments);  
+Ex:  
+t4d.status.update("test");  
+  
+  
+##How to compile with Twitter4D - Second way
+`$ dmd FileName.d twitter4d.d twitterAPI.d -version=useTAPI -L-lcurl`  
+  
+  
+##Notice - Second way
+Implementation of all endpoints is not over yet.  
+Finished:  
+
+- statuses(without update\_with\_media)  
+
   
   
 ##LICENSE

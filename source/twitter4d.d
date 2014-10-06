@@ -16,10 +16,13 @@ import std.digest.sha,
        std.conv,
        std.uri;
 
-import twitterAPI;
+version(useTAPI)
+  import twitterAPI;
 
 class Twitter4D{
-  mixin TwitterAPI;
+  version(useTAPI)
+    mixin TwitterAPI;
+  
   private{
     string consumerKey,
            consumerSecret,
@@ -29,7 +32,9 @@ class Twitter4D{
     string baseUrl = "https://api.twitter.com/1.1/";
   }
 
-  Statuses statuses;
+  version(useTAPI)
+    Statuses statuses;
+  
 
   this(string[string] oauthHash){
     if(oauthHash.length < 4)
@@ -39,8 +44,9 @@ class Twitter4D{
     consumerSecret    = oauthHash["consumerSecret"];
     accessToken       = oauthHash["accessToken"];
     accessTokenSecret = oauthHash["accessTokenSecret"];
-
-    statuses = new Statuses;
+    
+    version(useTAPI)
+      statuses = new Statuses;
   }
 
   this(string consumerKey, string consumerSecret,
@@ -50,7 +56,8 @@ class Twitter4D{
     this.accessToken       = accessToken;
     this.accessTokenSecret = accessTokenSecret;
     
-    statuses = new Statuses;
+    version(useTAPI)
+      statuses = new Statuses;
   }
 
   // post/get request function

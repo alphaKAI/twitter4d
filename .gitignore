@@ -1,7 +1,10 @@
+test
 test2.d
 test2
 .*.swp
 *.o
+tags
+memo
 .dub
 .buildpath
 .project
