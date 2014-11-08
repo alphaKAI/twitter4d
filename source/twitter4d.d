@@ -15,7 +15,6 @@ import std.digest.sha,
        std.regex,
        std.stdio,
        std.json,
-       std.uri,
        std.conv;
 
 class Twitter4D{
