@@ -1,6 +1,4 @@
-test
-test2.d
-test2
+test*
 .*.swp
 *.o
 tags

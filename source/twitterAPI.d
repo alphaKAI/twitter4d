@@ -9,7 +9,6 @@
 public import std.string;
 import std.json,
        std.conv;
-import twitter4d;
 
 mixin template TwitterAPI(){
   struct APICallResult{
@@ -17,27 +16,27 @@ mixin template TwitterAPI(){
     JSONValue json;
 
     //JSON Assessor
-    string getJsonElem(string path){
+    string getJsonElem(in string path){
       return getJsonElemFromJsonValue(json, path);
     }
     
-    string getJsonArrayElem(int offset,  string path){
+    string getJsonArrayElem(in int offset, in string path){
       return getJsonElemFromJsonValue(json[offset], path);
     }
 
-    string getJsonElemFromJsonValue(JSONValue from, string path){
+    string getJsonElemFromJsonValue(JSONValue from, in string path){
       foreach(key; path.split("/"))
         from = from.object[key.to!string];
 
       return from.to!string;
     }
 
-    string getJsonArrayElemFromJsonValue(JSONValue from, int offset, string path){
+    string getJsonArrayElemFromJsonValue(JSONValue from, in int offset, in string path){
       return getJsonElemFromJsonValue(from[offset], path);
     }
   }
 
-  private APICallResult generateResult(bool status, JSONValue jsonData){
+  private APICallResult generateResult(in bool status, in JSONValue jsonData){
     APICallResult result;
 
     result.success = status;
@@ -98,9 +97,27 @@ mixin template TwitterAPI(){
 
     //Todo: adapt to update with media
     //POST statuses/update_with_media
+    APICallResult update_with_media(string status, ubyte[][] images, string filenames[], string[string] params = string[string].init){
+      if(status.length == 0 || status.removechars(" ").length == 0)
+        return generateResult(false, JSONValue.init);
+      params["status"] = status;
+      
+      return callPostImage(images, filenames, params);
+    }
+    APICallResult update_with_media(string status, ubyte[] image, string filename, string[string] params = string[string].init){
+      if(status.length == 0 || status.removechars(" ").length == 0)
+        return generateResult(false, JSONValue.init);
+      params["status"] = status;
+
+      return callPostImage([image], [filename], params);
+    }
+    private APICallResult callPostImage(ubyte[][] images, string[] filenames, string[string] params){
+      //return generateResult(true, parseJSON(postImage("https://api.twitter.com/1.1/statuses/update_with_media.json", images, filenames, params)));
+      return generateResult(true, parseJSON(postImage("https://api.twitter.com/1.1/statuses/update_with_media.json", images, filenames, params)));
+    }
 
     //GET statuses/oembed
-    APICallResult oembed(long id, string[string] params = string[string].init){
+    APICallResult oembed(in long id, string[string] params = string[string].init){
       params["id"] = id.to!string;
       return generateResult(true, parseJSON(request("GET", "statuses/oembed", params)));
     }
@@ -111,7 +128,7 @@ mixin template TwitterAPI(){
     }
 
     //GET statuses/lookup
-    APICallResult lookup(long id, string[string] params = string[string].init){
+    APICallResult lookup(in long id, string[string] params = string[string].init){
       params["id"] = id.to!string;
       return generateResult(true, parseJSON(request("GET", "statuses/lookup.json", params)));
     }
