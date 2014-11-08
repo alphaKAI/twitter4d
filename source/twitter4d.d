@@ -102,22 +102,24 @@ class Twitter4D{
   }
 
   private{
-      string hexconv(T)(T s){
-        auto t = appender!string();
-        formattedWrite(t, "%x", s);
-        return '%' ~ t.data;
-      }
-      bool isMark(string str){
-        string charset = "abcdefghijklmnopqrstuvwxyz";
-        foreach(e; charset)
-          charset ~= toUpper(e);
-        charset ~= "1234567890._-";
-        foreach(x; str)
-          foreach(y; charset)
-            if(x == y)
-              return false;
-        return true;
-      }
+    string hexconv(T)(T s){
+      auto t = appender!string();
+      formattedWrite(t, "%x", s);
+      return '%' ~ t.data;
+    }
+
+    bool isMark(string str){
+      string charset = "abcdefghijklmnopqrstuvwxyz";
+      foreach(e; charset)
+        charset ~= toUpper(e);
+      charset ~= "1234567890._-";
+      foreach(x; str)
+        foreach(y; charset)
+        if(x == y)
+          return false;
+      return true;
+    }
+
     string urlEncode(string urlString){
       string array[];
       array.length = urlString.length;
@@ -130,6 +132,12 @@ class Twitter4D{
       return array.join();
     }
 
+    string urlEncodAndJoinWithPattern(string[] array, string pattern){
+      foreach(ref e; array)
+        e = urlEncode(e);
+      return array.join(pattern);
+    }
+
     string[string] buildParams(string[string] additionalParam = ["":""]){
       string now = Clock.currTime.toUnixTime.to!string;
       string[string] params = [
@@ -139,7 +147,7 @@ class Twitter4D{
         "oauth_timestamp" : now,
         "oauth_token" : accessToken,
         "oauth_version" : "1.0"];
-      
+
       if(additionalParam != ["":""])
         foreach(key, value; additionalParam)
           params[key] = value;
@@ -166,11 +174,6 @@ class Twitter4D{
       string oauthSignature = urlEncode(Base64.encode(hmac_sha1(key, base)));
 
       return oauthSignature;
-    }
-    string urlEncodAndJoinWithPattern(string[] array, string pattern){
-      foreach(ref e; array)
-        e = urlEncode(e);
-      return array.join(pattern);
     }
   }
 }
