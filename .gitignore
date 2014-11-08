@@ -1,0 +1,11 @@
+test*
+.*.swp
+*.o
+tags
+memo
+.dub
+.buildpath
+.project
+.settings
+dub.selections.json
+

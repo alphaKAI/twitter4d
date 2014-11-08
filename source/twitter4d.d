@@ -9,12 +9,14 @@ import std.digest.sha,
        std.datetime,
        std.net.curl,
        std.base64,
+       std.format,
+       std.string,
        std.array,
        std.regex,
        std.stdio,
        std.json,
-       std.conv,
-       std.uri;
+       std.uri,
+       std.conv;
 
 class Twitter4D{
   private{
@@ -100,6 +102,34 @@ class Twitter4D{
   }
 
   private{
+      string hexconv(T)(T s){
+        auto t = appender!string();
+        formattedWrite(t, "%x", s);
+        return '%' ~ t.data;
+      }
+      bool isMark(string str){
+        string charset = "abcdefghijklmnopqrstuvwxyz";
+        foreach(e; charset)
+          charset ~= toUpper(e);
+        charset ~= "1234567890._-";
+        foreach(x; str)
+          foreach(y; charset)
+            if(x == y)
+              return false;
+        return true;
+      }
+    string urlEncode(string urlString){
+      string array[];
+      array.length = urlString.length;
+      foreach(i, charc; urlString){
+        if(isMark(charc.to!string))
+          array[i] = toUpper(hexconv(charc));
+        else
+          array[i] = charc.to!string;
+      }
+      return array.join();
+    }
+
     string[string] buildParams(string[string] additionalParam = ["":""]){
       string now = Clock.currTime.toUnixTime.to!string;
       string[string] params = [
@@ -114,7 +144,7 @@ class Twitter4D{
         foreach(key, value; additionalParam)
           params[key] = value;
       foreach(key, value; params)
-        params[key] = encodeComponent(value);
+        params[key] = urlEncode(value);
 
       return params;
     }
@@ -131,12 +161,16 @@ class Twitter4D{
     string signature(string consumerSecret, string accessTokenSecret, string method, string url, string[string] params){
 
       auto query = params.keys.sort.map!(k => k ~ "=" ~ params[k]).join("&");
-      auto key = [consumerSecret, accessTokenSecret].map!encodeComponent.join("&");
-      auto base = [method, url, query].map!encodeComponent.join("&");
-
-      string oauthSignature = encodeComponent(Base64.encode(hmac_sha1(key, base)));
+      auto key  = urlEncodAndJoinWithPattern([consumerSecret, accessTokenSecret], "&");
+      auto base = urlEncodAndJoinWithPattern([method, url, query], "&");
+      string oauthSignature = urlEncode(Base64.encode(hmac_sha1(key, base)));
 
       return oauthSignature;
+    }
+    string urlEncodAndJoinWithPattern(string[] array, string pattern){
+      foreach(ref e; array)
+        e = urlEncode(e);
+      return array.join(pattern);
     }
   }
 }
