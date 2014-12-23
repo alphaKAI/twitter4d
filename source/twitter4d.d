@@ -104,32 +104,21 @@ class Twitter4D{
   }
 
   private{
-    static string hexconv(T)(T s){
-      return format("%%%x", s);
-    }
-
-    static bool isMark(string str){
-      string charset = "abcdefghijklmnopqrstuvwxyz";
-      foreach(e; charset)
-        charset ~= toUpper(e);
-      charset ~= "1234567890._-";
-      foreach(x; str)
-        foreach(y; charset)
-        if(x == y)
-          return false;
-      return true;
-    }
-
     static string urlEncode(string urlString){
-      string[] array;
-      array.length = urlString.length;
-      foreach(i, charc; urlString){
-        if(isMark(charc.to!string))
-          array[i] = toUpper(hexconv(charc));
+      // Exclude A..Z a..z 0..9 - . _ ~
+      // See https://dev.twitter.com/oauth/overview/percent-encoding-parameters
+      import std.ascii : letters, digits;
+      static immutable exChars = letters ~ digits ~ "-._~";
+
+      auto result = appender!string;
+      result.reserve(urlString.length); // result.data.length >= urlString.length
+      foreach(char charc; urlString){
+        if(exChars.canFind(charc))
+          result ~= charc;
         else
-          array[i] = charc.to!string;
+          formattedWrite(result, "%%%X", charc);
       }
-      return array.join();
+      return result.data;
     }
 
     static string urlEncodAndJoinWithPattern(string[] array, string pattern){
@@ -178,5 +167,4 @@ class Twitter4D{
     }
   }
 }
-
 
