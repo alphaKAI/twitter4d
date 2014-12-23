@@ -121,7 +121,7 @@ class Twitter4D{
     }
 
     static string urlEncode(string urlString){
-      string array[];
+      string[] array;
       array.length = urlString.length;
       foreach(i, charc; urlString){
         if(isMark(charc.to!string))
