@@ -4,5 +4,7 @@
     "homepage": "http://alpha-kai-net.info/",
     "authors": ["alphaKAI"],
     "copyright": "Copyright (C) 2014 alphaKAI",
-    "license": "MIT"
+    "license": "MIT",
+    "libs": ["curl"],
+    "excludedSourceFiles": ["source/test.d"]
 }
