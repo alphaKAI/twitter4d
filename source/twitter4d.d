@@ -24,7 +24,7 @@ class Twitter4D{
            accessToken,
            accessTokenSecret;
 
-    string baseUrl = "https://api.twitter.com/1.1/";
+    static immutable string baseUrl = "https://api.twitter.com/1.1/";
   }
 
   this(string[string] oauthHash){
@@ -66,7 +66,7 @@ class Twitter4D{
     string oauthSignature = signature(consumerSecret, accessTokenSecret, method, url, params);
     params["oauth_signature"] = oauthSignature;
 
-    auto authorizeKeys = params.keys.filter!q{a.countUntil("oauth_")==0};
+    auto authorizeKeys = params.keys.filter!q{a.startsWith("oauth_")};
     auto authorize     = "OAuth " ~ authorizeKeys.map!(k => k ~ "=" ~ params[k]).join(",");
 
     string path = params.keys.map!(k => k ~ "=" ~ params[k]).join("&");
@@ -90,7 +90,7 @@ class Twitter4D{
     string oauthSignature = signature(consumerSecret, accessTokenSecret, "GET", url, params);
     params["oauth_signature"] = oauthSignature;
 
-    auto authorizeKeys = params.keys.filter!q{a.countUntil("oauth_")==0};
+    auto authorizeKeys = params.keys.filter!q{a.startsWith("oauth_")};
     auto authorize = "OAuth " ~ authorizeKeys.map!(k => k ~ "=" ~ params[k]).join(",");
 
     string path = params.keys.map!(k => k ~ "=" ~ params[k]).join("&");
@@ -104,13 +104,11 @@ class Twitter4D{
   }
 
   private{
-    string hexconv(T)(T s){
-      auto t = appender!string();
-      formattedWrite(t, "%x", s);
-      return '%' ~ t.data;
+    static string hexconv(T)(T s){
+      return format("%%%x", s);
     }
 
-    bool isMark(string str){
+    static bool isMark(string str){
       string charset = "abcdefghijklmnopqrstuvwxyz";
       foreach(e; charset)
         charset ~= toUpper(e);
@@ -122,7 +120,7 @@ class Twitter4D{
       return true;
     }
 
-    string urlEncode(string urlString){
+    static string urlEncode(string urlString){
       string array[];
       array.length = urlString.length;
       foreach(i, charc; urlString){
@@ -134,7 +132,7 @@ class Twitter4D{
       return array.join();
     }
 
-    string urlEncodAndJoinWithPattern(string[] array, string pattern){
+    static string urlEncodAndJoinWithPattern(string[] array, string pattern){
       foreach(ref e; array)
         e = urlEncode(e);
       return array.join(pattern);
@@ -153,14 +151,15 @@ class Twitter4D{
       if(additionalParam !is null)
         foreach(key, value; additionalParam)
           params[key] = value;
+
       foreach(key, value; params)
         params[key] = urlEncode(value);
 
       return params;
     }
 
-    ubyte[] hmac_sha1(in string key, in string message){
-      auto padding(in ubyte[] k){
+    static ubyte[] hmac_sha1(in string key, in string message){
+      static auto padding(in ubyte[] k){
         auto h = (64 < k.length)? sha1Of(k): k;
         return h ~ new ubyte[64 - h.length];
       }
