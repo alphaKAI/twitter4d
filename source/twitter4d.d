@@ -47,7 +47,7 @@ class Twitter4D{
 
   // post/get request function
   // Ex: request("POST", "statuses/update.json" ["status": "hoge"]);
-  auto request(string type, string endPoint, string[string] paramsArgument = ["":""]){
+  auto request(string type, string endPoint, string[string] paramsArgument = null){
     string method = (){
       if(type == "get" || type == "GET")
         return "GET";
@@ -56,6 +56,9 @@ class Twitter4D{
       else
         throw new Error("Method Name Error");
     }();
+
+    // support the old way to indicate no parameters
+    if (paramsArgument == ["":""]) paramsArgument = null;
 
     string[string] params = buildParams(paramsArgument);
     string url = baseUrl ~ endPoint;
@@ -137,7 +140,7 @@ class Twitter4D{
       return array.join(pattern);
     }
 
-    string[string] buildParams(string[string] additionalParam = ["":""]){
+    string[string] buildParams(string[string] additionalParam = null){
       string now = Clock.currTime.toUnixTime.to!string;
       string[string] params = [
         "oauth_consumer_key" : consumerKey,
@@ -147,7 +150,7 @@ class Twitter4D{
         "oauth_token" : accessToken,
         "oauth_version" : "1.0"];
 
-      if(additionalParam != ["":""])
+      if(additionalParam !is null)
         foreach(key, value; additionalParam)
           params[key] = value;
       foreach(key, value; params)
