@@ -121,7 +121,7 @@ class Twitter4D{
       return result.data;
     }
 
-    static string urlEncodAndJoinWithPattern(string[] array, string pattern){
+    static string urlEncodeAndJoinWithPattern(string[] array, string pattern){
       foreach(ref e; array)
         e = urlEncode(e);
       return array.join(pattern);
@@ -159,8 +159,8 @@ class Twitter4D{
     string signature(string consumerSecret, string accessTokenSecret, string method, string url, string[string] params){
 
       auto query = params.keys.sort.map!(k => k ~ "=" ~ params[k]).join("&");
-      auto key  = urlEncodAndJoinWithPattern([consumerSecret, accessTokenSecret], "&");
-      auto base = urlEncodAndJoinWithPattern([method, url, query], "&");
+      auto key  = urlEncodeAndJoinWithPattern([consumerSecret, accessTokenSecret], "&");
+      auto base = urlEncodeAndJoinWithPattern([method, url, query], "&");
       string oauthSignature = urlEncode(Base64.encode(hmac_sha1(key, base)));
 
       return oauthSignature;
