@@ -17,8 +17,6 @@ import std.digest.sha,
        std.json,
        std.conv;
 
-private mixin template initializeByHashMap()
-
 class Twitter4D{
   private{
     string consumerKey,
@@ -161,11 +159,10 @@ class Twitter4D{
   }
 }
 
-private:
-string initializeByHashMap(string varName, string hmName)
-{
+//sub functions
+private string initializeByHashMap(string varName, string hmName){
   import std.string : format;
   return "try this.%s = %s[\"%s\"]; catch (RangeError e) throw new Error(\"%s\");"
-        .format(varName, hmName, varName,
-                "%s must have an item with key \\\"%s\\\"".format(hmName, varName));
+    .format(varName, hmName, varName,
+        "%s must have an item with key \\\"%s\\\"".format(hmName, varName));
 }
