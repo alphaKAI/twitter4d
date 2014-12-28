@@ -24,7 +24,7 @@ class Twitter4D{
            accessToken,
            accessTokenSecret;
 
-    static immutable string baseUrl = "https://api.twitter.com/1.1/";
+    enum string baseUrl = "https://api.twitter.com/1.1/";
   }
 
   this(string[string] oauthHash){
@@ -105,7 +105,7 @@ class Twitter4D{
       // Exclude A..Z a..z 0..9 - . _ ~
       // See https://dev.twitter.com/oauth/overview/percent-encoding-parameters
       import std.ascii : letters, digits;
-      static immutable exChars = letters ~ digits ~ "-._~";
+      enum exChars = letters ~ digits ~ "-._~";
 
       auto result = appender!string;
       result.reserve(urlString.length); // result.data.length >= urlString.length
