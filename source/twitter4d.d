@@ -17,6 +17,8 @@ import std.digest.sha,
        std.json,
        std.conv;
 
+private mixin template initializeByHashMap()
+
 class Twitter4D{
   private{
     string consumerKey,
@@ -28,13 +30,10 @@ class Twitter4D{
   }
 
   this(string[string] oauthHash){
-    if(oauthHash.length < 4)
-      throw new Error("Error: When Initialize this class, requirements 4 element");
-
-    consumerKey       = oauthHash["consumerKey"];
-    consumerSecret    = oauthHash["consumerSecret"];
-    accessToken       = oauthHash["accessToken"];
-    accessTokenSecret = oauthHash["accessTokenSecret"];
+    mixin ("consumerKey"      .initializeByHashMap("oauthHash"));
+    mixin ("consumerSecret"   .initializeByHashMap("oauthHash"));
+    mixin ("accessToken"      .initializeByHashMap("oauthHash"));
+    mixin ("accessTokenSecret".initializeByHashMap("oauthHash"));
   }
 
   this(string consumerKey, string consumerSecret,
@@ -162,3 +161,11 @@ class Twitter4D{
   }
 }
 
+private:
+string initializeByHashMap(string varName, string hmName)
+{
+  import std.string : format;
+  return "try this.%s = %s[\"%s\"]; catch (RangeError e) throw new Error(\"%s\");"
+        .format(varName, hmName, varName,
+                "%s must have an item with key \\\"%s\\\"".format(hmName, varName));
+}
