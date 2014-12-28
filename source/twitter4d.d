@@ -124,12 +124,12 @@ class Twitter4D{
     string[string] buildParams(string[string] additionalParam = null){
       string now = Clock.currTime.toUnixTime.to!string;
       string[string] params = [
-        "oauth_consumer_key" : consumerKey,
-        "oauth_nonce" : "4324yfe",
+        "oauth_consumer_key"     : consumerKey,
+        "oauth_nonce"            : "4324yfe",
         "oauth_signature_method" : "HMAC-SHA1",
-        "oauth_timestamp" : now,
-        "oauth_token" : accessToken,
-        "oauth_version" : "1.0"];
+        "oauth_timestamp"        : now,
+        "oauth_token"            : accessToken,
+        "oauth_version"          : "1.0"];
 
       if(additionalParam !is null)
         foreach(key, value; additionalParam)
@@ -153,8 +153,8 @@ class Twitter4D{
     string signature(string consumerSecret, string accessTokenSecret, string method, string url, string[string] params){
 
       auto query = params.keys.sort.map!(k => k ~ "=" ~ params[k]).join("&");
-      auto key  = [consumerSecret, accessTokenSecret].map!urlEncode().join("&");
-      auto base = [method, url, query].map!urlEncode().join("&");
+      auto key  = [consumerSecret, accessTokenSecret].map!(x => urlEncode(x)).join("&");
+      auto base = [method, url, query].map!(x => urlEncode(x)).join("&");
       string oauthSignature = urlEncode(Base64.encode(hmac_sha1(key, base)));
 
       return oauthSignature;
