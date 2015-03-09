@@ -119,10 +119,11 @@ class Twitter4D{
     }
 
     string[string] buildParams(string[string] additionalParam = null){
+      import std.uuid : randomUUID;
       string now = Clock.currTime.toUnixTime.to!string;
       string[string] params = [
         "oauth_consumer_key"     : consumerKey,
-        "oauth_nonce"            : "4324yfe",
+        "oauth_nonce"            : randomUUID().to!string,
         "oauth_signature_method" : "HMAC-SHA1",
         "oauth_timestamp"        : now,
         "oauth_token"            : accessToken,
