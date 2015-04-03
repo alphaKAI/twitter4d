@@ -18,20 +18,26 @@ import std.digest.sha,
        std.conv;
 
 class Twitter4D{
+  bool developer;
   private{
     string consumerKey,
            consumerSecret,
            accessToken,
            accessTokenSecret;
 
-    enum string baseUrl = "https://api.twitter.com/1.1/";
+    string baseUrl      = "https://api.twitter.com/1.1/";
+    string oauthBaseUrl = "https://api.twitter.com/oauth/";
   }
 
   this(string[string] oauthHash){
     mixin ("consumerKey"      .initializeByHashMap("oauthHash"));
     mixin ("consumerSecret"   .initializeByHashMap("oauthHash"));
-    mixin ("accessToken"      .initializeByHashMap("oauthHash"));
-    mixin ("accessTokenSecret".initializeByHashMap("oauthHash"));
+
+    if("accessToken" in oauthHash)
+      mixin ("accessToken"      .initializeByHashMap("oauthHash"));
+    
+    if("accessTokenSecret" in oauthHash)
+      mixin ("accessTokenSecret".initializeByHashMap("oauthHash"));
   }
 
   this(string consumerKey, string consumerSecret,
@@ -40,6 +46,38 @@ class Twitter4D{
     this.consumerSecret    = consumerSecret;
     this.accessToken       = accessToken;
     this.accessTokenSecret = accessTokenSecret;
+  }
+
+  this(string consumerKey, string consumerSecret){
+    this.consumerKey    = consumerKey;
+    this.consumerSecret = consumerSecret;
+  }
+  
+  string[string] getAccessToken(){
+    string[string] accessTokens = requestAccessToken;
+    return accessTokens;
+  }
+
+  void printAccessTokens(){
+    if(developer){
+      writeln("accessToken : ", accessToken);
+      writeln("accessTokenSecret : ", accessTokenSecret);
+    }
+  }
+
+  void setAccessToken(string[string] accessTokens){
+    this.accessToken       = accessTokens["accessToken"];
+    this.accessTokenSecret = accessTokens["accessTokenSecret"];
+  }
+
+  //Need to more consideration
+  auto oauthRequest(string type, string endPoint, string[string] paramsArgument = null){
+    auto tmp = baseUrl;
+    baseUrl  = oauthBaseUrl;
+    scope(exit)
+      baseUrl = tmp;
+
+    return request(type, endPoint, paramsArgument);
   }
 
   // post/get request function
@@ -59,7 +97,7 @@ class Twitter4D{
 
     string[string] params = buildParams(paramsArgument);
     string url = baseUrl ~ endPoint;
-
+    
     string oauthSignature = signature(consumerSecret, accessTokenSecret, method, url, params);
     params["oauth_signature"] = oauthSignature;
 
@@ -69,21 +107,20 @@ class Twitter4D{
     string path = params.keys.map!(k => k ~ "=" ~ params[k]).join("&");
 
     auto http = HTTP();
-
+    
     http.addRequestHeader("Authorization", authorize);
     if(method == "GET")
       return get(url ~ "?" ~ path, http);
     else if(method == "POST")
       return post(url, path, http);
-    
+
     return null;
   }
-
 
   //Testing
   auto stream(string url = "https://userstream.twitter.com/1.1/user.json"){
     string[string] params = buildParams();
-    
+
     string oauthSignature = signature(consumerSecret, accessTokenSecret, "GET", url, params);
     params["oauth_signature"] = oauthSignature;
 
@@ -156,6 +193,32 @@ class Twitter4D{
       string oauthSignature = urlEncode(Base64.encode(hmac_sha1(key, base)));
 
       return oauthSignature;
+    }
+
+    string[string] toToken(string str){
+      string[string] result;
+      foreach (x; str.split("&").map!q{a.split("=")})
+        result[x[0]] = x[1];
+      return result;
+    }
+
+    //Test implementation
+    string[string] requestAccessToken(){
+      string[string] requestToken = toToken(oauthRequest("GET", "request_token").to!string);
+
+      auto authorize_uri = oauthBaseUrl ~ "authorize" ~ "?oauth_token=" ~ requestToken["oauthToken"];
+      writeln("Please access this uri and input pin code");
+      authorize_uri.writeln;
+
+      write("PIN : ");
+      auto verifier = readln.chomp;
+
+      this.accessToken       = requestToken["oauthToken"];
+      this.accessTokenSecret = requestToken["oauthTokenSecret"];
+
+      string[string] tokens = toToken(oauthRequest("GET", "access_token", ["oauth_verifier": verifier]).to!string);
+      return ["accessToken"       : tokens["oauth_token"],
+              "accessTokenSecret" : tokens["oauth_token_secret"]];
     }
   }
 }
