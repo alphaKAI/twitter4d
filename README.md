@@ -26,10 +26,10 @@ Twitter4D t4d = new Twitter4D([
 or  
 ```d
 Twitter4D t4d = new Twitter4D(
-    "Your Consumer Key",
-    "Your Consumer Secret",
-    "Your Access Token",
-    "Your Access Token Secret"]); 
+    ["Your Consumer Key",
+     "Your Consumer Secret",
+     "Your Access Token",
+     "Your Access Token Secret"]); 
 ```
 ### POST API SAMPLE : statuses/update.json 
 `t4d.request("POST", "statuses/update.json", ["status" : "test"]);`
@@ -60,6 +60,22 @@ Return value : plain json String
 default streaming api is UserStream  
 `(Instance of Twitter4D).stream("endPoint URL(Full)");`  
 Return value : streaming api session  
+###GET ACCESS TOKEN
+```d
+Twitter4D t4d = new Twitter4D([
+    "consumerKey"       : "Your Consumer Key",
+    "consumerSecret"    : "Your Consumer Secret"]);
+//Array style is also ok:
+//Twitter4D t4d = new Twitter4d(["Your Consumer Key", "Your Consumer Secret"]);
+
+string[string] accessTokens = t4d.getAccessToken;
+//getAccessToken returns hash of accesstokens
+//Return Value : ["accessToken"       : "accessToken value",
+//                "accessTokenSecret" : "accessTokenSecret value"]
+
+//If you want to set accesstokens to twitter4d instance
+t4d.setAccessToken(accessTokens);
+```
   
   
 ## How to compile with Twitter4D
