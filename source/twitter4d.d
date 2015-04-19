@@ -16,7 +16,7 @@ import std.digest.sha,
        std.stdio,
        std.json,
        std.conv;
-
+import core.exception;
 class Twitter4D{
   bool developer;
   private{
@@ -187,7 +187,7 @@ class Twitter4D{
 
     string signature(string consumerSecret, string accessTokenSecret, string method, string url, string[string] params){
 
-      auto query = params.keys.sort.map!(k => k ~ "=" ~ params[k]).join("&");
+      auto query = std.algorithm.sort(params.keys).map!(k => k ~ "=" ~ params[k]).join("&");
       auto key  = [consumerSecret, accessTokenSecret].map!(x => urlEncode(x)).join("&");
       auto base = [method, url, query].map!(x => urlEncode(x)).join("&");
       string oauthSignature = urlEncode(Base64.encode(hmac_sha1(key, base)));
