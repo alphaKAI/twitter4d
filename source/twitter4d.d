@@ -217,6 +217,8 @@ class Twitter4D{
       this.accessTokenSecret = requestToken["oauth_token_secret"];
 
       string[string] tokens = toToken(oauthRequest("GET", "access_token", ["oauth_verifier": verifier]).to!string);
+      this.accessToken       = tokens["oauth_token"];
+      this.accessTokenSecret = tokens["oauth_token_secret"];
       return ["accessToken"       : tokens["oauth_token"],
               "accessTokenSecret" : tokens["oauth_token_secret"]];
     }
