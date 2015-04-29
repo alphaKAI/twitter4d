@@ -206,15 +206,15 @@ class Twitter4D{
     string[string] requestAccessToken(){
       string[string] requestToken = toToken(oauthRequest("GET", "request_token").to!string);
 
-      auto authorize_uri = oauthBaseUrl ~ "authorize" ~ "?oauth_token=" ~ requestToken["oauthToken"];
+      auto authorize_uri = oauthBaseUrl ~ "authorize" ~ "?oauth_token=" ~ requestToken["oauth_token"];
       writeln("Please access this uri and input pin code");
       authorize_uri.writeln;
 
       write("PIN : ");
       auto verifier = readln.chomp;
 
-      this.accessToken       = requestToken["oauthToken"];
-      this.accessTokenSecret = requestToken["oauthTokenSecret"];
+      this.accessToken       = requestToken["oauth_token"];
+      this.accessTokenSecret = requestToken["oauth_token_secret"];
 
       string[string] tokens = toToken(oauthRequest("GET", "access_token", ["oauth_verifier": verifier]).to!string);
       return ["accessToken"       : tokens["oauth_token"],
