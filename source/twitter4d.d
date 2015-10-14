@@ -124,14 +124,8 @@ class Twitter4D{
     string oauthSignature = signature(consumerSecret, accessTokenSecret, "GET", url, params);
     params["oauth_signature"] = oauthSignature;
 
-    auto authorizeKeys = params.keys.filter!q{a.startsWith("oauth_")};
-    auto authorize = "OAuth " ~ authorizeKeys.map!(k => k ~ "=" ~ params[k]).join(",");
-
     string path = params.keys.map!(k => k ~ "=" ~ params[k]).join("&");
 
-    auto http = HTTP();
-    http.addRequestHeader("Authorization", authorize);
-    http.method = HTTP.Method.get;
     auto streamSocket = byLineAsync(url ~ "?" ~ path);
 
     return streamSocket;
