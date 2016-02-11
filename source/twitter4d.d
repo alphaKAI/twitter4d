@@ -154,7 +154,11 @@ class Twitter4D {
       if (exChars.canFind(charc)) {
         result ~= charc;
       } else {
-        formattedWrite(result, "%%%X", charc);
+        if (0xf < charc) {
+          formattedWrite(result, "%%%X", charc);
+        } else {
+          formattedWrite(result, "%%0%X", charc);
+        }
       }
     }
 
