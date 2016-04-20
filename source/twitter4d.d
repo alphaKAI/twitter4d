@@ -128,10 +128,10 @@ class Twitter4D {
   }
 
   //Testing
-  public auto stream(string url = "https://userstream.twitter.com/1.1/user.json") {
+  public auto stream(string url = "https://userstream.twitter.com/1.1/user.json", string method = "GET") {
     string[string] params = buildParams();
 
-    string oauthSignature = signature(consumerSecret, accessTokenSecret, "GET", url, params);
+    string oauthSignature = signature(consumerSecret, accessTokenSecret, method, url, params);
     params["oauth_signature"] = oauthSignature;
 
     string path = params.keys.map!(k => k ~ "=" ~ params[k]).join("&");
