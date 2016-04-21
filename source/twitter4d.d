@@ -15,7 +15,8 @@ import std.digest.sha,
        std.regex,
        std.stdio,
        std.json,
-       std.conv;
+       std.conv,
+       std.uri;
 
 import core.exception;
 
@@ -141,30 +142,6 @@ class Twitter4D {
     return streamSocket;
   }
 
-  private static string urlEncode(string urlString) {
-    // Exclude A..Z a..z 0..9 - . _ ~
-    // See https://dev.twitter.com/oauth/overview/percent-encoding-parameters
-    import std.ascii : letters, digits;
-    enum exChars = letters ~ digits ~ "-._~";
-
-    auto result = appender!string;
-    result.reserve(urlString.length); // result.data.length >= urlString.length
-
-    foreach (char charc; urlString) {
-      if (exChars.canFind(charc)) {
-        result ~= charc;
-      } else {
-        if (0xf < charc) {
-          formattedWrite(result, "%%%X", charc);
-        } else {
-          formattedWrite(result, "%%0%X", charc);
-        }
-      }
-    }
-
-    return result.data;
-  }
-
   private string[string] buildParams(string[string] additionalParam = null) {
     import std.uuid : randomUUID;
     string now = Clock.currTime.toUnixTime.to!string;
@@ -183,7 +160,7 @@ class Twitter4D {
     }
 
     foreach (key, value; params) {
-      params[key] = urlEncode(value);
+      params[key] = encodeComponent(value);
     }
 
     return params;
@@ -203,9 +180,9 @@ class Twitter4D {
   private string signature(string consumerSecret, string accessTokenSecret, string method, string url, string[string] params) {
 
     auto query = std.algorithm.sort(params.keys).map!(k => k ~ "=" ~ params[k]).join("&");
-    auto key  = [consumerSecret, accessTokenSecret].map!(x => urlEncode(x)).join("&");
-    auto base = [method, url, query].map!(x => urlEncode(x)).join("&");
-    string oauthSignature = urlEncode(Base64.encode(hmac_sha1(key, base)));
+    auto key  = [consumerSecret, accessTokenSecret].map!(x => encodeComponent(x)).join("&");
+    auto base = [method, url, query].map!(x => encodeComponent(x)).join("&");
+    string oauthSignature = encodeComponent(Base64.encode(hmac_sha1(key, base)));
 
     return oauthSignature;
   }
