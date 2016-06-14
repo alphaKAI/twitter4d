@@ -1,6 +1,6 @@
 /*
   The Simple Twitter API Wrapper For D Programming Language.
-  Copyright (C) alphaKAI 2014 http://alpha-kai-net.info
+  Copyright (C) alphaKAI 2014-2016 http://alpha-kai-net.info
   THE MIT LICENSE.
 */
 
@@ -15,8 +15,8 @@ import std.digest.sha,
        std.regex,
        std.stdio,
        std.json,
-       std.conv,
-       std.uri;
+       std.conv;
+import std.uri : encodeComponentUnsafe = encodeComponent;
 
 import core.exception;
 
@@ -195,6 +195,27 @@ class Twitter4D {
     }
 
     return result;
+  }
+
+  private string encodeComponent(string s) {
+    char hexChar(ubyte c) {
+      assert(c >= 0 && c <= 15);
+      if (c < 10)
+        return cast(char)('0' + c);
+      else
+        return cast(char)('A' + c - 10);
+    }
+
+    enum InvalidChar = ctRegex!`[!\*'\(\)]`;
+
+    return s.encodeComponentUnsafe.replaceAll!((s) {
+          char c = s.hit[0];
+          char[3] encoded;
+          encoded[0] = '%';
+          encoded[1] = hexChar((c >> 4) & 0xF);
+          encoded[2] = hexChar(c & 0xF);
+          return encoded[].idup;
+        })(InvalidChar);
   }
 
   //Test implementation
