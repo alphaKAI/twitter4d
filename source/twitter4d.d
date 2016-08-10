@@ -4,7 +4,8 @@
   THE MIT LICENSE.
 */
 
-import std.digest.sha,
+import std.digest.hmac,
+       std.digest.sha,
        std.algorithm,
        std.datetime,
        std.net.curl,
@@ -165,23 +166,12 @@ class Twitter4D {
     return params;
   }
 
-  private static ubyte[] hmac_sha1(in string key, in string message) {
-    static auto padding(in ubyte[] k) {
-      auto h = (64 < k.length)? sha1Of(k): k;
-      return h ~ new ubyte[64 - h.length];
-    }
-
-    const k = padding(cast(ubyte[])key);
-
-    return sha1Of((k.map!q{cast(ubyte)(a^0x5c)}.array) ~ sha1Of((k.map!q{cast(ubyte)(a^0x36)}.array) ~ cast(ubyte[])message)).dup;
-  }
-
   private string signature(string consumerSecret, string accessTokenSecret, string method, string url, string[string] params) {
 
     auto query = std.algorithm.sort(params.keys).map!(k => k ~ "=" ~ params[k]).join("&");
     auto key  = [consumerSecret, accessTokenSecret].map!(x => encodeComponent(x)).join("&");
     auto base = [method, url, query].map!(x => encodeComponent(x)).join("&");
-    string oauthSignature = encodeComponent(Base64.encode(hmac_sha1(key, base)));
+    string oauthSignature = encodeComponent(Base64.encode(base.representation.hmac!SHA1(key.representation)));
 
     return oauthSignature;
   }
