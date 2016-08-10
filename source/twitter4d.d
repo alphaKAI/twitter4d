@@ -128,7 +128,6 @@ class Twitter4D {
     return null;
   }
 
-  //Testing
   public auto stream(string url = "https://userstream.twitter.com/1.1/user.json") {
     string[string] params = buildParams();
 
@@ -218,7 +217,7 @@ class Twitter4D {
         })(InvalidChar);
   }
 
-  //Test implementation
+  // Experimental implementation
   string[string] requestAccessToken() {
     string[string] requestToken = toToken(oauthRequest("GET", "request_token").to!string);
 
