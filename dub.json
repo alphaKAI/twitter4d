@@ -6,5 +6,6 @@
     "copyright": "Copyright (C) 2014 alphaKAI",
     "license": "MIT",
     "libs": ["curl"],
-    "excludedSourceFiles": ["source/test.d"]
+    "excludedSourceFiles": ["source/test.d"],
+    "dflags-ldc":["-disable-linker-strip-dead"]
 }
