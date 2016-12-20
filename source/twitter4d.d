@@ -86,6 +86,16 @@ class Twitter4D {
     return request(type, endPoint, paramsArgument);
   }
 
+  public auto customUrlRequest(string baseUrl, string type, string endPoint, string[string] paramsArgument = null) {
+    string tmp   = this.baseUrl;
+    this.baseUrl = baseUrl;
+    scope(exit) {
+      this.baseUrl = tmp;
+    }
+
+    return request(type, endPoint, paramsArgument);
+  }
+
   // post/get request function
   // Ex: request("POST", "statuses/update.json" ["status": "hoge"]);
   public auto request(string type, string endPoint, string[string] paramsArgument = null) {
