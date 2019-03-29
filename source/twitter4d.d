@@ -238,6 +238,51 @@ class Twitter4D {
     return ["accessToken"       : tokens["oauth_token"],
            "accessTokenSecret" : tokens["oauth_token_secret"]];
   }
+
+  public auto superCustomRequest(string baseUrl, string type, string endPoint,
+      string[string] paramsArgument = null,
+      string[string] additonalHeader = null, string additonalPostBody = null) {
+    string method = () {
+      if (type == "get" || type == "GET") {
+        return "GET";
+      } else if (type == "post" || type == "POST") {
+        return "POST";
+      } else {
+        throw new Error("Method Name Error");
+      }
+    }();
+
+    string[string] params = buildParams(paramsArgument);
+    string url = baseUrl ~ endPoint;
+
+    string oauthSignature = signature(consumerSecret, accessTokenSecret, method, url, params);
+    params["oauth_signature"] = oauthSignature;
+
+    auto authorizeKeys = params.keys.filter!q{a.startsWith("oauth_")};
+    auto authorize = "OAuth " ~ authorizeKeys.map!(k => k ~ "=" ~ params[k]).join(",");
+
+    string path = params.keys.map!(k => k ~ "=" ~ params[k]).join("&");
+
+    auto http = HTTP();
+
+    http.addRequestHeader("Authorization", authorize);
+
+    foreach (key, val; additonalHeader) {
+      http.addRequestHeader(key, val);
+    }
+
+    if (method == "GET") {
+      return get(url ~ "?" ~ path, http);
+    } else if (method == "POST") {
+      if (additonalPostBody !is null) {
+        return post(url, additonalPostBody, http);
+      } else {
+        return post(url, path, http);
+      }
+    }
+
+    return typeof(return).init;
+  }
 }
 
 //sub functions
