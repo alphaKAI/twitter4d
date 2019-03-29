@@ -23,13 +23,13 @@ import core.exception;
 
 class Twitter4D {
   public bool developer;
-  private string consumerKey,
+  protected string consumerKey,
                  consumerSecret,
                  accessToken,
                  accessTokenSecret;
 
-  private static string baseUrl      = "https://api.twitter.com/1.1/";
-  private static string oauthBaseUrl = "https://api.twitter.com/oauth/";
+  protected static string baseUrl      = "https://api.twitter.com/1.1/";
+  protected static string oauthBaseUrl = "https://api.twitter.com/oauth/";
 
 
   this(string[string] oauthHash) {
@@ -76,7 +76,7 @@ class Twitter4D {
   }
 
   //Need to more consideration
-  private auto oauthRequest(string type, string endPoint, string[string] paramsArgument = null) {
+  protected auto oauthRequest(string type, string endPoint, string[string] paramsArgument = null) {
     string tmp = baseUrl;
     baseUrl    = oauthBaseUrl;
     scope(exit) {
@@ -152,7 +152,7 @@ class Twitter4D {
     return streamSocket;
   }
 
-  private string[string] buildParams(string[string] additionalParam = null) {
+  protected string[string] buildParams(string[string] additionalParam = null) {
     import std.uuid : randomUUID;
     string now = Clock.currTime.toUnixTime.to!string;
     string[string] params = [
@@ -176,7 +176,7 @@ class Twitter4D {
     return params;
   }
 
-  private string signature(string consumerSecret, string accessTokenSecret, string method, string url, string[string] params) {
+  protected string signature(string consumerSecret, string accessTokenSecret, string method, string url, string[string] params) {
 
     auto query = std.algorithm.sort(params.keys).map!(k => k ~ "=" ~ params[k]).join("&");
     auto key  = [consumerSecret, accessTokenSecret].map!(x => encodeComponent(x)).join("&");
@@ -186,7 +186,7 @@ class Twitter4D {
     return oauthSignature;
   }
 
-  private static string[string] toToken(string str) {
+  protected static string[string] toToken(string str) {
     string[string] result;
 
     foreach (x; str.split("&").map!q{a.split("=")}) {
@@ -196,7 +196,7 @@ class Twitter4D {
     return result;
   }
 
-  private string encodeComponent(string s) {
+  protected string encodeComponent(string s) {
     char hexChar(ubyte c) {
       assert(c >= 0 && c <= 15);
       if (c < 10)
@@ -241,7 +241,7 @@ class Twitter4D {
 }
 
 //sub functions
-private static string initializeByHashMap(string varName, string hmName) {
+protected static string initializeByHashMap(string varName, string hmName) {
   import std.string : format;
   return "try this.%s = %s[\"%s\"]; catch (RangeError e) throw new Error(\"%s\");"
     .format(varName, hmName, varName,
