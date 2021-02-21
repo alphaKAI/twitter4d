@@ -139,8 +139,8 @@ class Twitter4D {
     return null;
   }
 
-  public auto stream(string url = "https://userstream.twitter.com/1.1/user.json") {
-    string[string] params = buildParams();
+  public auto stream(string url = "https://userstream.twitter.com/1.1/user.json", string[string] additionalParam = null) {
+    string[string] params = buildParams(additionalParam);
 
     string oauthSignature = signature(consumerSecret, accessTokenSecret, "GET", url, params);
     params["oauth_signature"] = oauthSignature;
